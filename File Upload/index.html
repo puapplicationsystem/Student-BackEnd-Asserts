@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative; /* Necessary for absolute positioning */
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        #uploadResult {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+        }
+
+        #filePreview {
+            display: none; /* Initially hidden */
+            position: absolute; /* Position absolutely */
+            top: 100%; /* Align below the file input */
+            left: 0;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            z-index: 1000; /* Ensure it's above other content */
+        }
+
+        .previewSymbol {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Show file preview when hovering over container */
+        .container:hover #filePreview {
+            display: block;
+        }
+
+        /* Show the preview symbol when hovering over container */
+        .container:hover .previewSymbol {
+            display: block;
+        }
+
+        #filePreview img, #filePreview iframe {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .error {
+            color: #f00;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#file').change(function(){
+                var input = this;
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var fileExtension = input.files[0].name.split('.').pop().toLowerCase();
+                        if (fileExtension === 'pdf') {
+                            $('#filePreview').html("<iframe src='" + e.target.result + "' style='width:100%;height:500px;' frameborder='0'></iframe>");
+                        } else {
+                            $('#filePreview').html("<img src='" + e.target.result + "' alt='File Preview'>");
+                        }
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            });
+
+            $('#uploadForm').submit(function(event){
+                event.preventDefault();
+                var formData = new FormData($(this)[0]);
+                $.ajax({
+                    url: 'upload.php',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    success: function(data){
+                        $('#uploadResult').html(data);
+                        if(data.includes("uploaded as")) {
+                            var fileName = data.split('uploaded as ')[1];
+                            var fileExtension = fileName.split('.').pop().toLowerCase();
+                            if (fileExtension === 'pdf') {
+                                $('#filePreview').html("<iframe src='uploads/" + fileName + "' style='width:100%;height:500px;' frameborder='0'></iframe>");
+                            } else {
+                                $('#filePreview').html("<img src='uploads/" + fileName + "' alt='File Preview'>");
+                            }
+                        } else {
+                            $('#filePreview').html(""); // Clear file preview if upload fails
+                        }
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Upload a File</h2>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" id="file" required>
+            <input type="submit" value="Upload">
+        </form>
+        <div id="uploadResult"></div>
+        <div id="filePreview" class="filePreview"></div> <!-- Changed id to class -->
+        <div class="previewSymbol">▲</div> <!-- Symbol for preview, you can customize this -->
+    </div>
+</body>
+</html>

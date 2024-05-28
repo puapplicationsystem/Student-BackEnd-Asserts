@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        #div1 {
+            background-color: white;
+            width: 80%;
+            height: 80%;
+            border-radius: 15px;
+            padding: auto;
+            border-color: black;
+            border: 12px;
+            box-shadow: 5px 5px 5px 5px grey;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #title {
+            text-align: center;
+        }
+        #form {
+            margin-left: 37%;
+            margin-top: 5%;
+            font-size: 20px;
+        }
+        #button {
+            margin-left: 15%;
+            size: 15px;
+            background-color: grey;
+            border-radius: 12px;
+            width: 20%;
+            height: 40px;
+        }
+        #button:hover {
+            background-color: white;
+            box-decoration-break: 12px 12px 12px 12px black;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Retrieve user data on page load
+            $.ajax({
+                type: 'GET',
+                url: 'retrieve.php',
+                success: function(response) {
+                    if (response.success) {
+                        $('#name').val(response.data.name);
+                        $('#aadhar').val(response.data.aadhar);
+                        $('#dof').val(response.data.dof);
+                    } else {
+                        alert(response.message);
+                        window.location.href = 'login.html';
+                    }
+                },
+                error: function() {
+                    alert('An error occurred. Please try again.');
+                }
+            });
+
+            $('#form').on('submit', function(e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'update.php',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        alert(response.message);
+                        if (response.success) {
+                            window.location.href = 'index1.html';
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body bgcolor="#EEEEEE">
+    <div id="div1">
+        <h1 id="title">Complete Registration</h1>
+        <form id="form" autocomplete="off">
+            <label>Name &emsp; &ensp; &emsp; :</label>
+            <input type="text" id="name" name="name" disabled><br><br>
+            <label>Aadhar No &emsp;    :</label>
+            <input type="text" id="aadhar" name="aadhar" disabled><br><br>
+            <label>Date Of Birth :</label>
+            <input type="date" id="dof" name="dof" disabled><br><br>
+            <label>Mobile No  &emsp;:</label>
+            <input type="text" name="mobile" placeholder="Enter Your Mobile No" required><br><br>
+            <label>City / Village :</label>
+            <input type="text" name="location" placeholder="Enter Your Location" required><br><br>
+            <label>Pincode &emsp; &ensp; :</label>
+            <input type="text" name="pin" placeholder="Enter Your Pin-Code" required><br><br>
+            <input type="submit" id="button" value="Save & Continue">
+        </form>
+    </div>
+</body>
+</html>

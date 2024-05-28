@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        #div1 {
+            background-color: white;
+            width: 80%;
+            height: 50%;
+            border-radius: 15px;
+            padding: auto;
+            border-color: black;
+            border: 12px;
+            box-shadow: 5px 5px 5px 5px grey;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #title {
+            text-align: center;
+        }
+        #form {
+            margin-left: 37%;
+            margin-top: 5%;
+            font-size: 20px;
+        }
+        #button {
+            margin-left: 15%;
+            size: 15px;
+            background-color: grey;
+            border-radius: 12px;
+            width: 20%;
+            height: 40px;
+        }
+        #button:hover {
+            background-color: white;
+            box-decoration-break: 12px 12px 12px 12px black;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#form').on('submit', function(e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'login.php',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.success) {
+                            window.location.href = 'complete.html';
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body bgcolor="#EEEEEE">
+    <div id="div1">
+        <h1 id="title">Login</h1>
+        <form id="form" autocomplete="off">
+            <label>Email &emsp; &ensp; &emsp; :</label>
+            <input type="email" name="email" placeholder="Enter Your Email" required><br><br>
+            <label>Password &emsp; &emsp; :</label>
+            <input type="password" name="password" placeholder="Enter Your Password" required><br><br>
+            <input type="submit" id="button" value="Login">
+        </form>
+    </div>
+</body>
+</html>
